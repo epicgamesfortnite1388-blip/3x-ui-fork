@@ -2485,6 +2485,14 @@
       "description": "Manage clients as first-class entities that can be attached to one or more inbounds. A single client row drives the settings.clients entry in every inbound it belongs to. Endpoints live under /panel/api/clients."
     },
     {
+      "name": "Providers",
+      "description": "Manage upstream providers that supply outbound proxies. A provider is a config source (e.g. a proxy subscription URL or a remote panel) whose outbounds are resolved by the provider registry and injected into the Xray routing pool. All endpoints under /panel/api/providers."
+    },
+    {
+      "name": "Subscription Management",
+      "description": "Manage client-facing subscriptions as first-class entities. Each subscription links a client to a provisioning workflow with create/renew/suspend/resume lifecycle. All endpoints under /panel/api/subs."
+    },
+    {
       "name": "Nodes",
       "description": "Manage remote 3x-ui panels acting as nodes for a central panel. All endpoints under /panel/api/nodes."
     },
@@ -7421,6 +7429,682 @@
                   "obj": [
                     "vless://uuid@host:443?...#user1"
                   ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/panel/api/providers/list": {
+      "get": {
+        "tags": [
+          "Providers"
+        ],
+        "summary": "List every configured provider with its type, status, and metadata.",
+        "operationId": "get_panel_api_providers_list",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "msg": {
+                      "type": "string"
+                    },
+                    "obj": {}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/panel/api/providers/get/{id}": {
+      "get": {
+        "tags": [
+          "Providers"
+        ],
+        "summary": "Fetch a single provider by ID, including its full configuration.",
+        "operationId": "get_panel_api_providers_get_id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Provider ID.",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "msg": {
+                      "type": "string"
+                    },
+                    "obj": {}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/panel/api/providers/add": {
+      "post": {
+        "tags": [
+          "Providers"
+        ],
+        "summary": "Register a new provider with its type, endpoint, and authentication.",
+        "operationId": "post_panel_api_providers_add",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              },
+              "example": {
+                "type": "xray",
+                "remark": "my-provider",
+                "address": "https://provider.example.com",
+                "apiToken": "token...",
+                "enable": true
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "msg": {
+                      "type": "string"
+                    },
+                    "obj": {}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/panel/api/providers/update/{id}": {
+      "post": {
+        "tags": [
+          "Providers"
+        ],
+        "summary": "Update an existing provider by ID. Same body shape as /add.",
+        "operationId": "post_panel_api_providers_update_id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Provider ID.",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "msg": {
+                      "type": "string"
+                    },
+                    "obj": {}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/panel/api/providers/del/{id}": {
+      "post": {
+        "tags": [
+          "Providers"
+        ],
+        "summary": "Delete a provider by ID.",
+        "operationId": "post_panel_api_providers_del_id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Provider ID.",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "msg": {
+                      "type": "string"
+                    },
+                    "obj": {}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/panel/api/providers/test/{id}": {
+      "post": {
+        "tags": [
+          "Providers"
+        ],
+        "summary": "Test connectivity to a provider by ID. Returns latency and health status.",
+        "operationId": "post_panel_api_providers_test_id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Provider ID.",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "msg": {
+                      "type": "string"
+                    },
+                    "obj": {}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/panel/api/subs/create": {
+      "post": {
+        "tags": [
+          "Subscription Management"
+        ],
+        "summary": "Create a new subscription for a client. Generates the subscription ID and initial URL.",
+        "operationId": "post_panel_api_subs_create",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              },
+              "example": {
+                "clientEmail": "alice@example.com",
+                "plan": "monthly",
+                "totalGB": 53687091200,
+                "expiryDays": 30
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "msg": {
+                      "type": "string"
+                    },
+                    "obj": {}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/panel/api/subs/get/{id}": {
+      "get": {
+        "tags": [
+          "Subscription Management"
+        ],
+        "summary": "Fetch subscription details by subscription ID.",
+        "operationId": "get_panel_api_subs_get_id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Subscription ID.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "msg": {
+                      "type": "string"
+                    },
+                    "obj": {}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/panel/api/subs/renew/{id}": {
+      "post": {
+        "tags": [
+          "Subscription Management"
+        ],
+        "summary": "Renew a subscription. Adds the configured plan duration to the current expiry.",
+        "operationId": "post_panel_api_subs_renew_id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Subscription ID.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "msg": {
+                      "type": "string"
+                    },
+                    "obj": {}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/panel/api/subs/suspend/{id}": {
+      "post": {
+        "tags": [
+          "Subscription Management"
+        ],
+        "summary": "Suspend an active subscription. Client links stop resolving until resumed.",
+        "operationId": "post_panel_api_subs_suspend_id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Subscription ID.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "msg": {
+                      "type": "string"
+                    },
+                    "obj": {}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/panel/api/subs/resume/{id}": {
+      "post": {
+        "tags": [
+          "Subscription Management"
+        ],
+        "summary": "Resume a suspended subscription.",
+        "operationId": "post_panel_api_subs_resume_id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Subscription ID.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "msg": {
+                      "type": "string"
+                    },
+                    "obj": {}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/panel/api/subs/delete/{id}": {
+      "post": {
+        "tags": [
+          "Subscription Management"
+        ],
+        "summary": "Permanently delete a subscription.",
+        "operationId": "post_panel_api_subs_delete_id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Subscription ID.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "msg": {
+                      "type": "string"
+                    },
+                    "obj": {}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/panel/api/subs/url/{id}": {
+      "get": {
+        "tags": [
+          "Subscription Management"
+        ],
+        "summary": "Get the active subscription URL for a given subscription ID.",
+        "operationId": "get_panel_api_subs_url_id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Subscription ID.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "msg": {
+                      "type": "string"
+                    },
+                    "obj": {}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/panel/api/subs/status/{id}": {
+      "get": {
+        "tags": [
+          "Subscription Management"
+        ],
+        "summary": "Get the current status and usage of a subscription.",
+        "operationId": "get_panel_api_subs_status_id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Subscription ID.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "msg": {
+                      "type": "string"
+                    },
+                    "obj": {}
+                  }
+                },
+                "example": {
+                  "success": true,
+                  "obj": {
+                    "id": "sub-abc",
+                    "clientEmail": "alice@example.com",
+                    "status": "active",
+                    "totalGB": 53687091200,
+                    "usedGB": 1073741824,
+                    "expiryTime": 1767225600000
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/panel/api/subs/sync/{id}": {
+      "post": {
+        "tags": [
+          "Subscription Management"
+        ],
+        "summary": "Trigger an immediate traffic usage sync for this subscription.",
+        "operationId": "post_panel_api_subs_sync_id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Subscription ID.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "msg": {
+                      "type": "string"
+                    },
+                    "obj": {}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/panel/api/subs/list": {
+      "get": {
+        "tags": [
+          "Subscription Management"
+        ],
+        "summary": "List all subscriptions, optionally filtered by provider and status.",
+        "operationId": "get_panel_api_subs_list",
+        "parameters": [
+          {
+            "name": "providerId",
+            "in": "query",
+            "required": true,
+            "description": "Optional provider ID to filter by.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": true,
+            "description": "Optional status filter: active | suspended | expired.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "msg": {
+                      "type": "string"
+                    },
+                    "obj": {}
+                  }
                 }
               }
             }

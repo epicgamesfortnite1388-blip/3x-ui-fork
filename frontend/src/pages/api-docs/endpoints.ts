@@ -896,6 +896,147 @@ export const sections: readonly Section[] = [
   },
 
   {
+    id: 'providers',
+    title: 'Providers',
+    description:
+      'Manage upstream providers that supply outbound proxies. A provider is a config source (e.g. a proxy subscription URL or a remote panel) whose outbounds are resolved by the provider registry and injected into the Xray routing pool. All endpoints under /panel/api/providers.',
+    endpoints: [
+      {
+        method: 'GET',
+        path: '/panel/api/providers/list',
+        summary: 'List every configured provider with its type, status, and metadata.',
+      },
+      {
+        method: 'GET',
+        path: '/panel/api/providers/get/:id',
+        summary: 'Fetch a single provider by ID, including its full configuration.',
+        params: [
+          { name: 'id', in: 'path', type: 'number', desc: 'Provider ID.' },
+        ],
+      },
+      {
+        method: 'POST',
+        path: '/panel/api/providers/add',
+        summary: 'Register a new provider with its type, endpoint, and authentication.',
+        body: '{\n  "type": "xray",\n  "remark": "my-provider",\n  "address": "https://provider.example.com",\n  "apiToken": "token...",\n  "enable": true\n}',
+      },
+      {
+        method: 'POST',
+        path: '/panel/api/providers/update/:id',
+        summary: 'Update an existing provider by ID. Same body shape as /add.',
+        params: [
+          { name: 'id', in: 'path', type: 'number', desc: 'Provider ID.' },
+        ],
+      },
+      {
+        method: 'POST',
+        path: '/panel/api/providers/del/:id',
+        summary: 'Delete a provider by ID.',
+        params: [
+          { name: 'id', in: 'path', type: 'number', desc: 'Provider ID.' },
+        ],
+      },
+      {
+        method: 'POST',
+        path: '/panel/api/providers/test/:id',
+        summary: 'Test connectivity to a provider by ID. Returns latency and health status.',
+        params: [
+          { name: 'id', in: 'path', type: 'number', desc: 'Provider ID.' },
+        ],
+      },
+    ],
+  },
+
+  {
+    id: 'subscription-management',
+    title: 'Subscription Management',
+    description:
+      'Manage client-facing subscriptions as first-class entities. Each subscription links a client to a provisioning workflow with create/renew/suspend/resume lifecycle. All endpoints under /panel/api/subs.',
+    endpoints: [
+      {
+        method: 'POST',
+        path: '/panel/api/subs/create',
+        summary: 'Create a new subscription for a client. Generates the subscription ID and initial URL.',
+        body: '{\n  "clientEmail": "alice@example.com",\n  "plan": "monthly",\n  "totalGB": 53687091200,\n  "expiryDays": 30\n}',
+      },
+      {
+        method: 'GET',
+        path: '/panel/api/subs/get/:id',
+        summary: 'Fetch subscription details by subscription ID.',
+        params: [
+          { name: 'id', in: 'path', type: 'string', desc: 'Subscription ID.' },
+        ],
+      },
+      {
+        method: 'POST',
+        path: '/panel/api/subs/renew/:id',
+        summary: 'Renew a subscription. Adds the configured plan duration to the current expiry.',
+        params: [
+          { name: 'id', in: 'path', type: 'string', desc: 'Subscription ID.' },
+        ],
+      },
+      {
+        method: 'POST',
+        path: '/panel/api/subs/suspend/:id',
+        summary: 'Suspend an active subscription. Client links stop resolving until resumed.',
+        params: [
+          { name: 'id', in: 'path', type: 'string', desc: 'Subscription ID.' },
+        ],
+      },
+      {
+        method: 'POST',
+        path: '/panel/api/subs/resume/:id',
+        summary: 'Resume a suspended subscription.',
+        params: [
+          { name: 'id', in: 'path', type: 'string', desc: 'Subscription ID.' },
+        ],
+      },
+      {
+        method: 'POST',
+        path: '/panel/api/subs/delete/:id',
+        summary: 'Permanently delete a subscription.',
+        params: [
+          { name: 'id', in: 'path', type: 'string', desc: 'Subscription ID.' },
+        ],
+      },
+      {
+        method: 'GET',
+        path: '/panel/api/subs/url/:id',
+        summary: 'Get the active subscription URL for a given subscription ID.',
+        params: [
+          { name: 'id', in: 'path', type: 'string', desc: 'Subscription ID.' },
+        ],
+      },
+      {
+        method: 'GET',
+        path: '/panel/api/subs/status/:id',
+        summary: 'Get the current status and usage of a subscription.',
+        params: [
+          { name: 'id', in: 'path', type: 'string', desc: 'Subscription ID.' },
+        ],
+        response: '{\n  "success": true,\n  "obj": {\n    "id": "sub-abc",\n    "clientEmail": "alice@example.com",\n    "status": "active",\n    "totalGB": 53687091200,\n    "usedGB": 1073741824,\n    "expiryTime": 1767225600000\n  }\n}',
+      },
+      {
+        method: 'POST',
+        path: '/panel/api/subs/sync/:id',
+        summary: 'Trigger an immediate traffic usage sync for this subscription.',
+        params: [
+          { name: 'id', in: 'path', type: 'string', desc: 'Subscription ID.' },
+        ],
+      },
+      {
+        method: 'GET',
+        path: '/panel/api/subs/list',
+        summary: 'List all subscriptions, optionally filtered by provider and status.',
+        params: [
+          { name: 'providerId', in: 'query', type: 'number', desc: 'Optional provider ID to filter by.' },
+          { name: 'status', in: 'query', type: 'string', desc: 'Optional status filter: active | suspended | expired.' },
+        ],
+      },
+    ],
+  },
+
+  {
     id: 'nodes',
     title: 'Nodes',
     description:
